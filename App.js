@@ -1,15 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { PaperProvider } from "react-native-paper";
+import { NavigationContainer } from "@react-navigation/native";
+import MainStack from "./components/navigators/MainStack";
+import { AuthProvider } from "./providers/AuthProvider";
+import { SpinnerProvider } from "./providers/SpinnerProvider";
+
+function Root() {
+	return (
+		<NavigationContainer>
+			<MainStack />
+			<StatusBar style="auto" />
+		</NavigationContainer>
+	);
+}
 
 export default function App() {
 	return (
-		<PaperProvider>
-			<View style={styles.container}>
-				<Text>Open up App.js to start working on your app!</Text>
-				<StatusBar style="auto" />
-			</View>
-		</PaperProvider>
+		<SpinnerProvider>
+			<PaperProvider>
+				<AuthProvider>
+					<Root />
+				</AuthProvider>
+			</PaperProvider>
+		</SpinnerProvider>
 	);
 }
 
