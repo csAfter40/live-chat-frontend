@@ -1,18 +1,6 @@
-import { Text, StyleSheet } from "react-native";
 import React from "react";
-import Page from "../components/Page";
+import BottomTabNavigation from "../components/navigators/BottomTabNavigation";
 
 export default function Home() {
-	return (
-		<Page style={styles.page}>
-			<Text>Home</Text>
-		</Page>
-	);
+	return <BottomTabNavigation />;
 }
-
-const styles = StyleSheet.create({
-	page: {
-		justifyContent: "center",
-		alignItems: "center",
-	},
-});
