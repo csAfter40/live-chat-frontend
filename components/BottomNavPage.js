@@ -15,7 +15,7 @@ export default function BottomNavPage({ children, style, title }) {
 	});
 	return (
 		<>
-			<TopBar title={title} />
+			<TopBar title={title} showSearch={true} />
 			<View style={[styles.page, style]}>{children}</View>
 		</>
 	);
