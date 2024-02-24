@@ -6,8 +6,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import MainStack from "./components/navigators/MainStack";
-import { AuthProvider } from "./providers/AuthProvider";
-import { SpinnerProvider } from "./providers/SpinnerProvider";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,13 +35,9 @@ export default function App() {
 		return null;
 	}
 	return (
-		<SpinnerProvider>
-			<PaperProvider>
-				<AuthProvider>
-					<Root />
-				</AuthProvider>
-			</PaperProvider>
-		</SpinnerProvider>
+		<PaperProvider>
+			<Root />
+		</PaperProvider>
 	);
 }
 
