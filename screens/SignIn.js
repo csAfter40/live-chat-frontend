@@ -4,6 +4,7 @@ import Page from "../components/Page";
 import { Text, TextInput, Button, TouchableRipple } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { useTheme } from "react-native-paper";
+import axiosInstance from "../api";
 
 export default function SignIn({ navigation }) {
 	const theme = useTheme();
@@ -23,7 +24,28 @@ export default function SignIn({ navigation }) {
 		mode: "onSubmit",
 	});
 	function onSubmit(data) {
-		console.log(data);
+		axiosInstance
+			.post("/chat/signin/", data)
+			.then((res) => console.log(res.data))
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code
+					// that falls out of the range of 2xx
+					console.log(error.response.data);
+					console.log(error.response.status);
+					console.log(error.response.headers);
+				} else if (error.request) {
+					// The request was made but no response was received
+					// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+					// http.ClientRequest in node.js
+					console.log("request error");
+					console.log(error.request);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					console.log("Error", error.message);
+				}
+				console.log(error.config);
+			});
 	}
 	function navigateSignup() {
 		navigation.navigate("SignUp");
