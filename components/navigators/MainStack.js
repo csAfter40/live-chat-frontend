@@ -5,8 +5,9 @@ import SignUp from "../../screens/SignUp";
 import Home from "../../screens/Home";
 import Search from "../../screens/Search";
 import Messages from "../../screens/Messages";
-import { AuthContext } from "../../providers/AuthProvider";
 import TopBar from "../TopBar";
+import useGlobal from "../../global";
+import GlobalSpinner from "../GlobalSpinner";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +50,12 @@ function AuthenticatedStack() {
 }
 
 export default function MainStack() {
-	const { isAuthenticated } = React.useContext(AuthContext);
-	return <>{isAuthenticated ? <AuthenticatedStack /> : <AuthStack />}</>;
+	const isAuthenticated = useGlobal((state) => state.isAuthenticated);
+	const spinnerVisible = useGlobal((state) => state.spinnerVisible);
+	return (
+		<>
+			{isAuthenticated ? <AuthenticatedStack /> : <AuthStack />}
+			{spinnerVisible && <GlobalSpinner />}
+		</>
+	);
 }
