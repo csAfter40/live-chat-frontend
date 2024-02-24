@@ -5,8 +5,12 @@ import { Text, TextInput, Button, TouchableRipple } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { useTheme } from "react-native-paper";
 import axiosInstance from "../api";
+import useGlobal from "../global";
 
 export default function SignIn({ navigation }) {
+	const login = useGlobal((state) => state.login);
+	const startSpinner = useGlobal((state) => state.startSpinner);
+	const stopSpinner = useGlobal((state) => state.stopSpinner);
 	const theme = useTheme();
 	const [hidePassword, setHidePassword] = React.useState(true);
 	function togglePasswordView() {
@@ -24,9 +28,13 @@ export default function SignIn({ navigation }) {
 		mode: "onSubmit",
 	});
 	function onSubmit(data) {
+		startSpinner();
 		axiosInstance
 			.post("/chat/signin/", data)
-			.then((res) => console.log(res.data))
+			.then((res) => {
+				const user = res.data.user;
+				login(user);
+			})
 			.catch((error) => {
 				if (error.response) {
 					// The request was made and the server responded with a status code
@@ -45,7 +53,8 @@ export default function SignIn({ navigation }) {
 					console.log("Error", error.message);
 				}
 				console.log(error.config);
-			});
+			})
+			.finally(stopSpinner);
 	}
 	function navigateSignup() {
 		navigation.navigate("SignUp");

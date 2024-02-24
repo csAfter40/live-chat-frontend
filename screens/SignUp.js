@@ -4,9 +4,13 @@ import Page from "../components/Page";
 import { Text, TextInput, Button } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { useTheme } from "react-native-paper";
+import useGlobal from "../global";
 import axiosInstance from "../api";
 
 export default function SignUp({ navigation }) {
+	const login = useGlobal((state) => state.login);
+	const startSpinner = useGlobal((state) => state.startSpinner);
+	const stopSpinner = useGlobal((state) => state.stopSpinner);
 	const theme = useTheme();
 	const [hidePassword1, setHidePassword1] = React.useState(true);
 	const [hidePassword2, setHidePassword2] = React.useState(true);
@@ -33,6 +37,7 @@ export default function SignUp({ navigation }) {
 		mode: "onSubmit",
 	});
 	function onSubmit(data) {
+		startSpinner();
 		postData = {
 			username: data.username,
 			email: data.email,
@@ -42,7 +47,10 @@ export default function SignUp({ navigation }) {
 		};
 		axiosInstance
 			.post("/chat/signup/", postData)
-			.then((res) => console.log(res))
+			.then((res) => {
+				const user = res.data.user;
+				login(user);
+			})
 			.catch((error) => {
 				if (error.response) {
 					// The request was made and the server responded with a status code
@@ -61,7 +69,8 @@ export default function SignUp({ navigation }) {
 					console.log("Error", error.message);
 				}
 				console.log(error.config);
-			});
+			})
+			.finally(stopSpinner);
 	}
 	function navigateSignin() {
 		navigation.navigate("SignIn");
