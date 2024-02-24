@@ -1,4 +1,10 @@
-import { StyleSheet, View } from "react-native";
+import {
+	StyleSheet,
+	View,
+	Keyboard,
+	Pressable,
+	KeyboardAvoidingView,
+} from "react-native";
 import React from "react";
 import { useTheme } from "react-native-paper";
 
@@ -12,5 +18,11 @@ export default function Page({ children, style }) {
 			backgroundColor: theme.colors.background,
 		},
 	});
-	return <View style={[styles.page, style]}>{children}</View>;
+	return (
+		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+			<Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+				<View style={[styles.page, style]}>{children}</View>
+			</Pressable>
+		</KeyboardAvoidingView>
+	);
 }
