@@ -33,7 +33,11 @@ export default function SignIn({ navigation }) {
 			.post("/chat/signin/", data)
 			.then((res) => {
 				const user = res.data.user;
-				login(user);
+				const credentials = {
+					username: data.username,
+					password: data.password,
+				};
+				login(credentials, user);
 			})
 			.catch((error) => {
 				if (error.response) {
