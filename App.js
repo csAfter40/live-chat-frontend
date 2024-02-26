@@ -6,6 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import MainStack from "./components/navigators/MainStack";
+import useGlobal from "./global";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +20,8 @@ function Root() {
 }
 
 export default function App() {
+	const initialized = useGlobal((state) => state.initialized);
+	const init = useGlobal((state) => state.init);
 	const [fontsLoaded, fontsError] = useFonts({
 		"Lobster-Regular": require("./assets/fonts/Lobster-Regular.ttf"),
 	});
@@ -26,10 +29,15 @@ export default function App() {
 		const hideSplash = async () => {
 			await SplashScreen.hideAsync();
 		};
+		console.log(initialized, fontsLoaded);
 		if (fontsLoaded || fontsError) {
-			hideSplash();
+			if (!initialized) {
+				init();
+			} else {
+				hideSplash();
+			}
 		}
-	}, [fontsLoaded, fontsError]);
+	}, [fontsLoaded, fontsError, initialized]);
 
 	if (!fontsLoaded && !fontsError) {
 		return null;
