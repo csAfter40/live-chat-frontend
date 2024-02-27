@@ -49,11 +49,12 @@ export default function SignUp({ navigation }) {
 			.post("/chat/signup/", postData)
 			.then((res) => {
 				const user = res.data.user;
+				const tokens = res.data.tokens;
 				const credentials = {
 					username: postData.username,
 					password: postData.password,
 				};
-				login(credentials, user);
+				login(credentials, user, tokens);
 			})
 			.catch((error) => {
 				if (error.response) {
