@@ -74,15 +74,15 @@ const useGlobal = create((set, get) => ({
 		socket.onmessage = (event) => {
 			// this is where we recieve incoming messages
 			const responses = {
-				"thumbnail": responseThumbnail
-			}
+				thumbnail: responseThumbnail,
+			};
 			const parsedData = JSON.parse(event.data);
-			const response = responses[parsedData.source]
+			const response = responses[parsedData.source];
 			if (!response) {
-				console.log("Unable to find data source.")
-				return
+				console.log("Unable to find data source.");
+				return;
 			}
-			response(set, get, parsedData.data)
+			response(set, get, parsedData.data);
 		};
 		socket.onerror = (err) => {
 			console.log("socket error", err);
@@ -94,8 +94,14 @@ const useGlobal = create((set, get) => ({
 			socket: socket,
 		}));
 	},
-	socketClose: async () => {
-		// const tokens = await secure.retrieveKey("tokens")
+	socketClose: () => {
+		const socket = get().socket;
+		if (socket) {
+			socket.close();
+		}
+		set((state) => ({
+			socket: null,
+		}));
 	},
 
 	//Thumbnail
