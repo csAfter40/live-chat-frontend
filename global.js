@@ -3,7 +3,15 @@ import secure from "./secure";
 import axiosInstance from "./api";
 import { ADDRESS } from "./api";
 
-const useGlobal = create((set) => ({
+
+// Socket receive message handlers
+function responseThumbnail(set, get, data) {
+	set((state)=>({
+		user: data
+	}))
+}
+
+const useGlobal = create((set, get) => ({
 	// Initialization
 	initialized: false,
 	init: async () => {
@@ -61,16 +69,26 @@ const useGlobal = create((set) => ({
 		const tokens = JSON.parse(await secure.retrieveKey("tokens"));
 		const socket = new WebSocket(`ws://${ADDRESS}/chat/?token=${tokens.access}`);
 		socket.onopen = () => {
-			console.log("onopen called");
+			console.log("socket opened");
 		};
-		socket.onmessage = () => {
-			console.log("onmessage called");
+		socket.onmessage = (event) => {
+			// this is where we recieve incoming messages
+			const responses = {
+				"thumbnail": responseThumbnail
+			}
+			const parsedData = JSON.parse(event.data);
+			const response = responses[parsedData.source]
+			if (!response) {
+				console.log("Unable to find data source.")
+				return
+			}
+			response(set, get, parsedData.data)
 		};
-		socket.onerror = () => {
-			console.log("onerror called");
+		socket.onerror = (err) => {
+			console.log("socket error", err);
 		};
 		socket.onclose = () => {
-			console.log("onclose called");
+			console.log("socket closed");
 		};
 		set((state) => ({
 			socket: socket,
@@ -78,6 +96,28 @@ const useGlobal = create((set) => ({
 	},
 	socketClose: async () => {
 		// const tokens = await secure.retrieveKey("tokens")
+	},
+
+	//Thumbnail
+	uploadThumbnail: (file) => {
+		const socket = get().socket;
+		socket.send(
+			JSON.stringify({
+				source: "thumbnail",
+				base64: file.base64,
+				filename: file.fileName,
+			})
+		);
+	},
+	deleteThumbnail: () => {
+		const socket = get().socket;
+		socket.send(
+			JSON.stringify({
+				source: "thumbnail",
+				base64: null,
+				filename: null,
+			})
+		);
 	},
 }));
 
