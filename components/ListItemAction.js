@@ -4,7 +4,7 @@ import { Button } from "react-native-paper";
 export default function ListItemAction({ data }) {
 	return (
 		<Button
-			style={{ height: 40 }}
+			style={{ alignSelf: "center" }}
 			mode="contained-tonal"
 			disabled={data.disabled}
 			onPress={data.onPress}
