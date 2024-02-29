@@ -11,6 +11,12 @@ function responseThumbnail(set, get, data) {
 	}))
 }
 
+function responseSearch(set, get, data) {
+	set((state) => ({
+		searchResults: data,
+	}));
+}
+
 const useGlobal = create((set, get) => ({
 	// Initialization
 	initialized: false,
@@ -75,6 +81,7 @@ const useGlobal = create((set, get) => ({
 			// this is where we recieve incoming messages
 			const responses = {
 				thumbnail: responseThumbnail,
+				search: responseSearch,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
@@ -103,8 +110,26 @@ const useGlobal = create((set, get) => ({
 			socket: null,
 		}));
 	},
+	// Search
+	searchResults: null,
 
-	//Thumbnail
+	searchUser: (query) => {
+		if (query) {
+			const socket = get().socket;
+			socket.send(
+				JSON.stringify({
+					source: "search",
+					query: query,
+				})
+			);
+		} else {
+			set((state) => ({
+				searchResults: null,
+			}));
+		}
+	},
+
+	// Thumbnail
 	uploadThumbnail: (file) => {
 		const socket = get().socket;
 		socket.send(
