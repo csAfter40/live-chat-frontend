@@ -8,8 +8,8 @@ export default function RequestList({ requests }) {
 		<View style={{ flex: 1, width: "100%" }}>
 			<FlashList
 				data={requests}
-				renderItem={({ item }) => <RequestListItem person={item.sender} />}
-				keyExtractor={(item) => item.sender.username}
+				renderItem={({ item }) => <RequestListItem request={item} />}
+				keyExtractor={(item) => item.id}
 				estimatedItemSize={50}
 			/>
 		</View>
