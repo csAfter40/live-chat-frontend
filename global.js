@@ -16,6 +16,11 @@ function responseSearch(set, get, data) {
 		searchResults: data,
 	}));
 }
+function responseRequestList(set, get, data) {
+	set((state) => ({
+		requestsList: data,
+	}));
+}
 
 function responseRequestConnection(set, get, connection) {
 	const user = get().user;
@@ -95,6 +100,11 @@ const useGlobal = create((set, get) => ({
 		const socket = new WebSocket(`ws://${ADDRESS}/chat/?token=${tokens.access}`);
 		socket.onopen = () => {
 			console.log("socket opened");
+			socket.send(
+				JSON.stringify({
+					source: "request.list",
+				})
+			);
 		};
 		socket.onmessage = (event) => {
 			// this is where we recieve incoming messages
@@ -102,6 +112,7 @@ const useGlobal = create((set, get) => ({
 				thumbnail: responseThumbnail,
 				search: responseSearch,
 				"request.connect": responseRequestConnection,
+				"request.list": responseRequestList,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
