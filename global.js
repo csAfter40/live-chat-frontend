@@ -17,6 +17,25 @@ function responseSearch(set, get, data) {
 	}));
 }
 
+function responseRequestConnection(set, get, connection) {
+	const user = get().user;
+	// if I am the one who sent connect request:
+	if (user.username === connection.sender.username) {
+		const searchResults = get().searchResults;
+		const newList = searchResults.map((person) => {
+			if (person.username === connection.receiver.username) {
+				return { ...person, status: "pending-them" };
+			} else {
+				return person;
+			}
+		});
+		set((state) => ({
+			searchResults: newList,
+		}));
+	} else {
+	}
+}
+
 const useGlobal = create((set, get) => ({
 	// Initialization
 	initialized: false,
@@ -82,6 +101,7 @@ const useGlobal = create((set, get) => ({
 			const responses = {
 				thumbnail: responseThumbnail,
 				search: responseSearch,
+				"request.connect": responseRequestConnection,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
@@ -127,6 +147,19 @@ const useGlobal = create((set, get) => ({
 				searchResults: null,
 			}));
 		}
+	},
+
+	// Requests
+	requestsList: null,
+
+	requestConnect: (username) => {
+		const socket = get().socket;
+		socket.send(
+			JSON.stringify({
+				source: "request.connect",
+				username: username,
+			})
+		);
 	},
 
 	// Thumbnail

@@ -2,13 +2,15 @@ import React from "react";
 import { List, Avatar, Divider, Text, Icon } from "react-native-paper";
 import { getThumbnail } from "../utils";
 import ListItemAction from "./ListItemAction";
+import useGlobal from "../global";
 
 export default function PersonListItem({ person }) {
 	const data = {};
+	const requestConnect = useGlobal((state) => state.requestConnect);
 	switch (person.status) {
 		case "not-connected":
 			data.text = "Connect";
-			data.onPress = () => {};
+			data.onPress = () => requestConnect(person.username);
 			data.disabled = false;
 			break;
 		case "pending-them":
@@ -37,7 +39,7 @@ export default function PersonListItem({ person }) {
 					person.status === "connected" ? (
 						<Icon source="checkbox-marked-circle" color="green" size={40} />
 					) : (
-						<ListItemAction data={data} />
+						<ListItemAction data={data} username={person.username} />
 					)
 				}
 			/>
