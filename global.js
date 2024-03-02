@@ -22,6 +22,13 @@ function responseRequestList(set, get, data) {
 	}));
 }
 
+function responseRequestAccept(set, get, data) {
+	console.log(data);
+	// set((state) => ({
+	// 	requestsList: data,
+	// }));
+}
+
 function responseRequestConnection(set, get, connection) {
 	const user = get().user;
 	// if I am the one who sent connect request:
@@ -38,6 +45,12 @@ function responseRequestConnection(set, get, connection) {
 			searchResults: newList,
 		}));
 	} else {
+		// If I receive a connect request
+		const newRequestList = [...get().requestsList];
+		newRequestList.unshift(connection);
+		set((state) => ({
+			requestsList: newRequestList,
+		}));
 	}
 }
 
@@ -113,6 +126,7 @@ const useGlobal = create((set, get) => ({
 				search: responseSearch,
 				"request.connect": responseRequestConnection,
 				"request.list": responseRequestList,
+				"request.accept": responseRequestAccept,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
@@ -169,6 +183,16 @@ const useGlobal = create((set, get) => ({
 			JSON.stringify({
 				source: "request.connect",
 				username: username,
+			})
+		);
+	},
+
+	requestAccept: (id) => {
+		const socket = get().socket;
+		socket.send(
+			JSON.stringify({
+				source: "request.accept",
+				id: id,
 			})
 		);
 	},
