@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import { List, Avatar, Divider, Text, Icon } from "react-native-paper";
 import { getThumbnail } from "../utils";
 import ListItemAction from "./ListItemAction";
@@ -37,7 +38,13 @@ export default function PersonListItem({ person }) {
 				description={() => <Text>{person.username}</Text>}
 				right={() =>
 					person.status === "connected" ? (
-						<Icon source="checkbox-marked-circle" color="green" size={40} />
+						<View style={{ alignSelf: "center" }}>
+							<Icon
+								source="checkbox-marked-circle"
+								color="green"
+								size={40}
+							/>
+						</View>
 					) : (
 						<ListItemAction data={data} username={person.username} />
 					)
