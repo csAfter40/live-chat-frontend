@@ -16,6 +16,11 @@ function responseSearch(set, get, data) {
 		searchResults: data,
 	}));
 }
+function responseFriendList(set, get, data) {
+	set((state) => ({
+		friendsList: data,
+	}));
+}
 function responseRequestList(set, get, data) {
 	set((state) => ({
 		requestsList: data,
@@ -113,9 +118,16 @@ const useGlobal = create((set, get) => ({
 		const socket = new WebSocket(`ws://${ADDRESS}/chat/?token=${tokens.access}`);
 		socket.onopen = () => {
 			console.log("socket opened");
+			// get requests
 			socket.send(
 				JSON.stringify({
 					source: "request.list",
+				})
+			);
+			// get friends
+			socket.send(
+				JSON.stringify({
+					source: "friend.list",
 				})
 			);
 		};
@@ -127,6 +139,7 @@ const useGlobal = create((set, get) => ({
 				"request.connect": responseRequestConnection,
 				"request.list": responseRequestList,
 				"request.accept": responseRequestAccept,
+				"friend.list": responseFriendList,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
@@ -173,6 +186,8 @@ const useGlobal = create((set, get) => ({
 			}));
 		}
 	},
+	// Friends
+	friendsList: null,
 
 	// Requests
 	requestsList: null,
