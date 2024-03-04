@@ -29,7 +29,6 @@ export default function App() {
 		const hideSplash = async () => {
 			await SplashScreen.hideAsync();
 		};
-		console.log(initialized, fontsLoaded);
 		if (fontsLoaded || fontsError) {
 			if (!initialized) {
 				init();
