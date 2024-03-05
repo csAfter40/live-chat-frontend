@@ -31,7 +31,11 @@ export default function TopBar({
 					style={{ marginLeft: 12 }}
 				/>
 			)}
-			<Appbar.Content title={barTitle} />
+			{options?.headerTitle ? (
+				options.headerTitle()
+			) : (
+				<Appbar.Content title={barTitle} />
+			)}
 			{showSearch && <Appbar.Action icon="magnify" onPress={handleSearch} />}
 		</Appbar.Header>
 	);
