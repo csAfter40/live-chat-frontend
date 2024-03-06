@@ -28,7 +28,7 @@ function responseRequestList(set, get, data) {
 }
 
 function responseRequestAccept(set, get, data) {
-	console.log(data);
+	// console.log(data);
 	// set((state) => ({
 	// 	requestsList: data,
 	// }));
@@ -168,6 +168,19 @@ const useGlobal = create((set, get) => ({
 			socket: null,
 		}));
 	},
+	// Message
+
+	messageSend: (connectionId, messageText) => {
+		const socket = get().socket;
+		socket.send(
+			JSON.stringify({
+				source: "message.send",
+				messageText: messageText,
+				connectionId: connectionId,
+			})
+		);
+	},
+
 	// Search
 	searchResults: null,
 
