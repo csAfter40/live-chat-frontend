@@ -16,6 +16,11 @@ function responseSearch(set, get, data) {
 		searchResults: data,
 	}));
 }
+function responseMessageList(set, get, data) {
+	set((state) => ({
+		messages: [...get().messages, ...data],
+	}));
+}
 function responseFriendList(set, get, data) {
 	set((state) => ({
 		friendsList: data,
@@ -140,6 +145,7 @@ const useGlobal = create((set, get) => ({
 				"request.list": responseRequestList,
 				"request.accept": responseRequestAccept,
 				"friend.list": responseFriendList,
+				"message.list": responseMessageList,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
@@ -169,13 +175,28 @@ const useGlobal = create((set, get) => ({
 		}));
 	},
 	// Message
-
+	messages: [],
 	messageSend: (connectionId, messageText) => {
 		const socket = get().socket;
 		socket.send(
 			JSON.stringify({
 				source: "message.send",
 				messageText: messageText,
+				connectionId: connectionId,
+			})
+		);
+	},
+	messageList: (connectionId, page = 0) => {
+		if (page === 0) {
+			set((state) => ({
+				messages: [],
+			}));
+		}
+		const socket = get().socket;
+		socket.send(
+			JSON.stringify({
+				source: "message.list",
+				page: page,
 				connectionId: connectionId,
 			})
 		);
