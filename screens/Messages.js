@@ -4,6 +4,9 @@ import React from "react";
 import Page from "../components/Page";
 import { getThumbnail } from "../utils";
 import useGlobal from "../global";
+import SelfMessageListItem from "../components/SelfMessageListItem";
+import OtherMessageListItem from "../components/OtherMessageListItem";
+import { FlashList } from "@shopify/flash-list";
 
 function MessagesTitle({ friend }) {
 	return (
@@ -15,7 +18,10 @@ function MessagesTitle({ friend }) {
 }
 
 export default function Messages({ navigation, route }) {
+	const user = useGlobal((state) => state.user);
 	const messageSend = useGlobal((state) => state.messageSend);
+	const messageList = useGlobal((state) => state.messageList);
+	const messages = useGlobal((state) => state.messages);
 	const friend = route.params.friend;
 	const connectionId = route.params.id;
 	const [messageText, setMessageText] = React.useState("");
@@ -23,6 +29,9 @@ export default function Messages({ navigation, route }) {
 		navigation.setOptions({
 			headerTitle: (props) => <MessagesTitle {...props} friend={friend} />,
 		});
+	}, []);
+	React.useEffect(() => {
+		messageList(connectionId);
 	}, []);
 	function onSend() {
 		const cleanedText = messageText.replace(/\s+/g, " ").trim();
@@ -32,7 +41,21 @@ export default function Messages({ navigation, route }) {
 	}
 	return (
 		<Page style={styles.page}>
-			<View style={styles.messagesContainer}></View>
+			<View style={styles.messagesContainer}>
+				<FlashList
+					data={messages}
+					renderItem={({ item }) =>
+						item.sender === user.id ? (
+							<SelfMessageListItem message={item} />
+						) : (
+							<OtherMessageListItem message={item} friend={friend} />
+						)
+					}
+					keyExtractor={(item) => item.id}
+					estimatedItemSize={50}
+					inverted={true}
+				/>
+			</View>
 			<TextInput
 				multiline={true}
 				mode="outlined"
@@ -45,7 +68,6 @@ export default function Messages({ navigation, route }) {
 					<TextInput.Icon
 						icon="send-circle"
 						iconColor="#689f38"
-						// iconColor={theme.colors.primary}
 						size={40}
 						onPress={onSend}
 						style={{ alignSelf: "center" }}
@@ -69,13 +91,15 @@ const styles = StyleSheet.create({
 	},
 	messagesContainer: {
 		flex: 1,
-		borderColor: "red",
-		borderWidth: 2,
+		borderColor: "#808080",
+		borderRadius: 10,
+		borderWidth: 1,
 		width: "100%",
+		padding: 10,
 	},
 	messageInput: {
 		width: "100%",
-		marginVertical: 20,
+		marginVertical: 10,
 		maxHeight: 100,
 	},
 });
