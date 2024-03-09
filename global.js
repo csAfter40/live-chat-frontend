@@ -16,6 +16,11 @@ function responseSearch(set, get, data) {
 		searchResults: data,
 	}));
 }
+function responseMessageSend(set, get, data) {
+	set((state) => ({
+		messages: [data, ...get().messages],
+	}));
+}
 function responseMessageList(set, get, data) {
 	set((state) => ({
 		messages: [...get().messages, ...data],
@@ -146,6 +151,7 @@ const useGlobal = create((set, get) => ({
 				"request.accept": responseRequestAccept,
 				"friend.list": responseFriendList,
 				"message.list": responseMessageList,
+				"message.send": responseMessageSend,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
