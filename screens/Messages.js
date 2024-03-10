@@ -22,6 +22,7 @@ export default function Messages({ navigation, route }) {
 	const messageSend = useGlobal((state) => state.messageSend);
 	const messageList = useGlobal((state) => state.messageList);
 	const messages = useGlobal((state) => state.messages);
+	const setCurrentConnection = useGlobal((state) => state.setCurrentConnection);
 	const friend = route.params.friend;
 	const connectionId = route.params.id;
 	const [messageText, setMessageText] = React.useState("");
@@ -32,6 +33,7 @@ export default function Messages({ navigation, route }) {
 	}, []);
 	React.useEffect(() => {
 		messageList(connectionId);
+		setCurrentConnection(route.params);
 	}, []);
 	function onSend() {
 		const cleanedText = messageText.replace(/\s+/g, " ").trim();
@@ -45,7 +47,7 @@ export default function Messages({ navigation, route }) {
 				<FlashList
 					data={messages}
 					renderItem={({ item }) =>
-						item.sender === user.id ? (
+						item.sender.id === user.id ? (
 							<SelfMessageListItem message={item} />
 						) : (
 							<OtherMessageListItem message={item} friend={friend} />

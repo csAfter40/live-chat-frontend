@@ -17,6 +17,31 @@ function responseSearch(set, get, data) {
 	}));
 }
 function responseMessageSend(set, get, data) {
+	// update connection preview
+	const user = get().user;
+	let friend;
+	if (data.sender.username === user.username) {
+		friend = data.receiver;
+	} else {
+		friend = data.sender;
+	}
+	const friends = [...get().friendsList];
+	const friendIndex = friends.findIndex(
+		(item) => item.friend.username === friend.username
+	);
+	if (friendIndex > -1) {
+		let connection = friends.splice(friendIndex, 1)[0];
+		connection.preview = data.text;
+		connection.updated = data.created;
+		friends.unshift(connection);
+		set((state) => ({
+			friendsList: friends,
+		}));
+	}
+	if (friend.username != get().currentConnection.friend.username) {
+		// if message is not from the current friend, don't update the messages
+		return;
+	}
 	set((state) => ({
 		messages: [data, ...get().messages],
 	}));
@@ -228,6 +253,12 @@ const useGlobal = create((set, get) => ({
 	},
 	// Friends
 	friendsList: null,
+	currentConnection: null,
+	setCurrentConnection: (connection) => {
+		set((state) => ({
+			currentConnection: connection,
+		}));
+	},
 
 	// Requests
 	requestsList: null,
