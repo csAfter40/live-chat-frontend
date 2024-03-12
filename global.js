@@ -38,6 +38,7 @@ function responseMessageSend(set, get, data) {
 			friendsList: friends,
 		}));
 	}
+	if (!get().currentConnection) return;
 	if (friend.username != get().currentConnection.friend.username) {
 		// if message is not from the current friend, don't update the messages
 		return;
@@ -54,6 +55,12 @@ function responseMessageList(set, get, data) {
 function responseFriendList(set, get, data) {
 	set((state) => ({
 		friendsList: data,
+	}));
+}
+function responseFriendNew(set, get, friend) {
+	const friends = get().friendsList;
+	set((state) => ({
+		friendsList: [friend, ...friends],
 	}));
 }
 function responseRequestList(set, get, data) {
@@ -175,6 +182,7 @@ const useGlobal = create((set, get) => ({
 				"request.list": responseRequestList,
 				"request.accept": responseRequestAccept,
 				"friend.list": responseFriendList,
+				"friend.new": responseFriendNew,
 				"message.list": responseMessageList,
 				"message.send": responseMessageSend,
 			};
