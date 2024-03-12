@@ -16,6 +16,13 @@ function responseSearch(set, get, data) {
 		searchResults: data,
 	}));
 }
+function responseMessageType(set, get, data) {
+	const connection = get().currentConnection;
+	if (data.username !== connection?.friend.username) return;
+	set((state) => ({
+		messagesTyping: new Date(),
+	}));
+}
 function responseMessageSend(set, get, data) {
 	// update connection preview
 	const user = get().user;
@@ -45,6 +52,7 @@ function responseMessageSend(set, get, data) {
 	}
 	set((state) => ({
 		messages: [data, ...get().messages],
+		messagesTyping: null,
 	}));
 }
 function responseMessageList(set, get, data) {
@@ -185,6 +193,7 @@ const useGlobal = create((set, get) => ({
 				"friend.new": responseFriendNew,
 				"message.list": responseMessageList,
 				"message.send": responseMessageSend,
+				"message.type": responseMessageType,
 			};
 			const parsedData = JSON.parse(event.data);
 			const response = responses[parsedData.source];
@@ -225,10 +234,21 @@ const useGlobal = create((set, get) => ({
 			})
 		);
 	},
+	messageType: (username) => {
+		const socket = get().socket;
+		socket.send(
+			JSON.stringify({
+				source: "message.type",
+				username: username,
+			})
+		);
+	},
+	messagesTyping: null,
 	messageList: (connectionId, page = 0) => {
 		if (page === 0) {
 			set((state) => ({
 				messages: [],
+				messagesTyping: null,
 			}));
 		}
 		const socket = get().socket;
