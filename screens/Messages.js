@@ -1,11 +1,10 @@
 import { StyleSheet, View } from "react-native";
-import { Text, Avatar, Appbar, TextInput, IconButton } from "react-native-paper";
+import { Avatar, Appbar, TextInput } from "react-native-paper";
 import React from "react";
 import Page from "../components/Page";
 import { getThumbnail } from "../utils";
 import useGlobal from "../global";
-import SelfMessageListItem from "../components/SelfMessageListItem";
-import OtherMessageListItem from "../components/OtherMessageListItem";
+import MessageListItem from "../components/MessageListItem";
 import { FlashList } from "@shopify/flash-list";
 
 function MessagesTitle({ friend }) {
@@ -19,6 +18,7 @@ function MessagesTitle({ friend }) {
 
 export default function Messages({ navigation, route }) {
 	const user = useGlobal((state) => state.user);
+	const messageType = useGlobal((state) => state.messageType);
 	const messageSend = useGlobal((state) => state.messageSend);
 	const messageList = useGlobal((state) => state.messageList);
 	const messages = useGlobal((state) => state.messages);
@@ -41,18 +41,23 @@ export default function Messages({ navigation, route }) {
 		messageSend(connectionId, cleanedText);
 		setMessageText("");
 	}
+	function onType(value) {
+		setMessageText(value);
+		messageType(friend.username);
+	}
 	return (
 		<Page style={styles.page}>
 			<View style={styles.messagesContainer}>
 				<FlashList
-					data={messages}
-					renderItem={({ item }) =>
-						item.sender.id === user.id ? (
-							<SelfMessageListItem message={item} />
-						) : (
-							<OtherMessageListItem message={item} friend={friend} />
-						)
-					}
+					data={[{ id: -1 }, ...messages]}
+					renderItem={({ item, index }) => (
+						<MessageListItem
+							message={item}
+							index={index}
+							friend={friend}
+							isMyMessage={item.sender?.id === user.id}
+						/>
+					)}
 					keyExtractor={(item) => item.id}
 					estimatedItemSize={50}
 					inverted={true}
@@ -62,7 +67,7 @@ export default function Messages({ navigation, route }) {
 				multiline={true}
 				mode="outlined"
 				value={messageText}
-				onChangeText={setMessageText}
+				onChangeText={onType}
 				style={styles.messageInput}
 				outlineStyle={{ borderRadius: 10 }}
 				label="Write message"
