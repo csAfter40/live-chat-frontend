@@ -55,7 +55,6 @@ function MessageTypingAnimation({ offset }) {
 }
 
 export default function TypingMessageListItem({ friend }) {
-	console.log("friend: ", friend);
 	const theme = useTheme();
 	const styles = StyleSheet.create({
 		container: {

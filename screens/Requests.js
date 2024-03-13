@@ -8,7 +8,6 @@ import RequestList from "../components/RequestList";
 
 export default function Requests() {
 	const requestsList = useGlobal((state) => state.requestsList);
-	console.log("requsets list: ", requestsList);
 	if (requestsList === null) {
 		return (
 			<BottomNavPage style={styles.page} title={"Requests"}>
