@@ -57,7 +57,8 @@ function responseMessageSend(set, get, data) {
 }
 function responseMessageList(set, get, data) {
 	set((state) => ({
-		messages: [...get().messages, ...data],
+		messages: [...get().messages, ...data.messages],
+		messagesNextPage: data.next,
 	}));
 }
 function responseFriendList(set, get, data) {
@@ -244,6 +245,7 @@ const useGlobal = create((set, get) => ({
 		);
 	},
 	messagesTyping: null,
+	messagesNextPage: null,
 	messageList: (connectionId, page = 0) => {
 		if (page === 0) {
 			set((state) => ({
@@ -251,6 +253,9 @@ const useGlobal = create((set, get) => ({
 				messagesTyping: null,
 			}));
 		}
+		set((state) => ({
+			messagesNextPage: null,
+		}));
 		const socket = get().socket;
 		socket.send(
 			JSON.stringify({

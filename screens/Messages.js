@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 import { Avatar, Appbar, TextInput } from "react-native-paper";
 import React from "react";
 import Page from "../components/Page";
@@ -21,6 +21,7 @@ export default function Messages({ navigation, route }) {
 	const messageType = useGlobal((state) => state.messageType);
 	const messageSend = useGlobal((state) => state.messageSend);
 	const messageList = useGlobal((state) => state.messageList);
+	const messagesNextPage = useGlobal((state) => state.messagesNextPage);
 	const messages = useGlobal((state) => state.messages);
 	const setCurrentConnection = useGlobal((state) => state.setCurrentConnection);
 	const friend = route.params.friend;
@@ -45,10 +46,15 @@ export default function Messages({ navigation, route }) {
 		setMessageText(value);
 		messageType(friend.username);
 	}
+	function fetchNextPage() {
+		if (messagesNextPage) {
+			messageList(connectionId, messagesNextPage);
+		}
+	}
 	return (
 		<Page style={styles.page}>
 			<View style={styles.messagesContainer}>
-				<FlashList
+				<FlatList
 					data={[{ id: -1 }, ...messages]}
 					renderItem={({ item, index }) => (
 						<MessageListItem
@@ -61,6 +67,7 @@ export default function Messages({ navigation, route }) {
 					keyExtractor={(item) => item.id}
 					estimatedItemSize={50}
 					inverted={true}
+					onEndReached={fetchNextPage}
 				/>
 			</View>
 			<TextInput
